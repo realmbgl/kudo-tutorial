@@ -99,19 +99,20 @@ plans:
 
 ### framework instance
 
+The framework instance defines a configured instance of the framework implementation.
+
+The instance name is specified in the metadata section.
 ```yaml
-apiVersion: kudo.k8s.io/v1alpha1
-kind: Instance
 metadata:
   name: myservice
-  labels:
-    controller-tools.k8s.io: "1.0"
-    framework: myservice-type
+```
+
+The instance spec references the framework implementation to be used. It is here where you can also provide parameter values. The sample sets the `WHO` parameter to the value `Matt`.
+```yaml
 spec:
   frameworkVersion:
     name: myservice-impl-v1
     namespace: default
-    type: FrameworkVersions
   parameters:
     WHO: "Matt"
 ```
