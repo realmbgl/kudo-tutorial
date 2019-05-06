@@ -2,8 +2,12 @@
 
 ## install kudo
 
+...
+
 
 ## installing and operating kudo frameworks
+
+...
 
 
 ## developing kudo frameworks
@@ -40,3 +44,5 @@ framework implementation spec
 * eg for backup and restore
 
 ### exercise 5: controlled parameter updates
+
+...
