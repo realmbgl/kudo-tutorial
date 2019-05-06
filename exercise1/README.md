@@ -4,13 +4,27 @@
 
 #### parameters
 
+Parameters allow for the configuration of you framework implementation on instantiation.
+
+The sample has one configuration parameter named `WHO` with a default value of `Ravi`.
+
 ```yaml
 parameters:
   - name: WHO
     default: "Ravi"
 ```
 
+Besides the keys shown in the sample a parameter can have the following additional keys `description`, `displayName`, and `required`.
+
+
 #### templates
+
+Templates define the resources that can be applied by this framework implementation.
+
+The sample has two resource templates, one is of type `ConfigMap` the other of type `POD`. The pod runs an nginx container into which the config map which holds an index.html file is mounted.
+
+In the config map you see how parameters get templated in, here the parameter `{{WHO}}`. There is also `{{NAMESPACE}}` and `{{NAME}}` which get provided by the framework instantiation.
+
 
 ```yaml
 templates:
@@ -23,7 +37,7 @@ templates:
       namespace: {{NAMESPACE}}
     data:
       index.html: |
-        Hello {{WHO}} !!!
+        {{WHO}}, hello from {{NAME}} !!!
 
   pod.yaml: |
     apiVersion: v1
@@ -49,6 +63,10 @@ templates:
 
 #### tasks
 
+Tasks list the resource templates that get applied together.
+
+The sample `deploy-task` applies the config and pod template.
+
 ```yaml
 tasks:
   deploy-task:
@@ -59,6 +77,12 @@ tasks:
 
 #### plans
 
+Plans orchestrate tasks through phases and steps.
+
+`Plans` consists of one or more `phases`. `Phases` consists of one or more `steps`. `Steps` contain one or more `tasks`. Both phases and also steps can be configured with an execution `strategy`, either serial or parallel.
+
+The sample has a `deploy` plan with a `deploy-phase` and a `deploy-step`. From the `deploy-step` the `deploy-task` is referenced. This task gets executed when a framework instance is applied.
+
 ```yaml
 plans:
   deploy:
@@ -67,15 +91,27 @@ plans:
       - name: deploy-phase
         strategy: parallel
         steps:
-          - name: deploy-setp
+          - name: deploy-step
             tasks:
               - deploy-task
 ```
 
 
-### framework Instance
+### framework instance
 
 ```yaml
-parameters:
-  WHO: "Matt"
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  name: myservice
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: myservice-type
+spec:
+  frameworkVersion:
+    name: myservice-impl-v1
+    namespace: default
+    type: FrameworkVersions
+  parameters:
+    WHO: "Matt"
 ```
