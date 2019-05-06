@@ -5,14 +5,14 @@
 ...
 
 
-## installing and operating kudo frameworks
+## install and operate kudo frameworks
 
 ...
 
 
-## developing kudo frameworks
+## develop kudo frameworks
 
-### authoring artifacts that make a kudo framework
+### artifacts that make a kudo framework
 
 #### framework-type
 #### framework-implementation (aka framework-version)
