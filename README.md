@@ -29,20 +29,20 @@ framework implementation spec
   * steps have 1 or more tasks
 #### framework-instance
 
-### exercise 1: parameters, templates, tasks, and plans in action
+### unit 1: parameters, templates, tasks, and plans in action
 * getting a 1st intuitive understanding of the framework implementation spec concepts
 
-### exercise 2: a stateful service
+### unit 2: a stateful service
 * using a stateful set template
 * showcasing persistent volumes
 * update plan, showing scaling
 
-### exercise 3: upgrade plans
+### unit 3: upgrade plans
 * showing that upgrade req special consideration for example in the es case not to panic
 
-### exercise 4: custom plans
+### unit 4: custom plans
 * eg for backup and restore
 
-### exercise 5: controlled parameter updates
+### unit 5: controlled parameter updates
 
 ...

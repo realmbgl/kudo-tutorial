@@ -1,4 +1,6 @@
-## exercise 1: parameters, templates, tasks, and plans in action
+## unit 1: parameters, templates, tasks, and plans in action
+
+This unit uses the sample [myservice.yaml](myservice.yaml) to showcase the key framework implementation concepts parameters, templates, tasks, and plans.
 
 ### framework implementation
 
