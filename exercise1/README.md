@@ -12,6 +12,7 @@ parameters:
 
 ```yaml
 templates:
+
   config.yaml: |
     apiVersion: v1
     kind: ConfigMap
@@ -21,6 +22,7 @@ templates:
     data:
       index.html: |
         Hello {{WHO}} !!!
+
   pod.yaml: |
     apiVersion: v1
     kind: Pod
