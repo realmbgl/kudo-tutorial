@@ -1,6 +1,8 @@
 ## exercise 1: parameters, templates, tasks, and plans in action
 
-### parameters
+### framework implementation
+
+#### parameters
 
 ```yaml
 parameters:
@@ -8,7 +10,7 @@ parameters:
     default: "Ravi"
 ```
 
-### templates
+#### templates
 
 ```yaml
 templates:
@@ -45,7 +47,7 @@ templates:
             name: {{NAME}}-config
 ```
 
-### tasks
+#### tasks
 
 ```yaml
 tasks:
@@ -55,7 +57,7 @@ tasks:
       - pod.yaml
 ```
 
-### plans
+#### plans
 
 ```yaml
 plans:
@@ -67,5 +69,13 @@ plans:
         steps:
           - name: deploy-setp
             tasks:
-            - deploy-task
+              - deploy-task
+```
+
+
+### framework Instance
+
+```yaml
+parameters:
+  WHO: "Matt"
 ```
