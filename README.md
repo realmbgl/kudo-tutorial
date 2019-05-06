@@ -29,7 +29,7 @@ framework implementation spec
   * steps have 1 or more tasks
 #### framework-instance
 
-### unit 1: parameters, templates, tasks, and plans in action
+### [unit 1](unit1/README.md): parameters, templates, tasks, and plans in action
 * getting a 1st intuitive understanding of the framework implementation spec concepts
 
 ### unit 2: a stateful service
