@@ -51,11 +51,9 @@ The framework instance defines a configured instance of a framework implementati
 * showcasing persistent volumes
 * showcasing instance update, showing scaling
 
-### unit 3: upgrade plans
-* showing that upgrade req special consideration for example in the es case not to panic
+### [unit 3](unit3): update and upgrade plans
+* showcasing update and upgrade Plans
+* showcasing controlled parameter updates
 
-### unit 4: custom plans
+### [unit 4](unit4): custom plans
 * backup and restore
-
-### unit 5: controlled parameter updates
-...
