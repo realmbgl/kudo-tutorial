@@ -34,7 +34,6 @@ A framework implementation consists of the following.
   * Tasks list the resource templates that get applied together.
 * `plans`
   * Plans orchestrate tasks through phases and steps.
-
   * Plans consists of one or more phases.
   * Phases consists of one or more steps.
   * Steps contain one or more tasks.
