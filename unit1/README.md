@@ -101,7 +101,7 @@ plans:
 
 ### framework instance
 
-The framework instance defines a configured instance of the framework implementation.
+The framework instance defines a configured instance of a framework implementation.
 
 The instance name is specified in the metadata section.
 ```yaml
