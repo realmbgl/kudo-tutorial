@@ -14,4 +14,4 @@ spec:
     namespace: default
     type: FrameworkVersions
   parameters:
-    NODE_COUNT: "4"
+    NODE_COUNT: "3"
