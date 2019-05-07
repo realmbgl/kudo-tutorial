@@ -2,17 +2,21 @@
 
 ## install kudo
 
-...
+See [here](https://kudo.dev/docs/getting-started/.) and [here](https://github.com/kudobuilder/kudo).
 
 
 ## install and operate kudo frameworks
 
-...
+See [here](https://github.com/kudobuilder/kudo#deploy-your-first-application).
 
 
 ## develop kudo frameworks
 
 ### artifacts that make a kudo framework
+
+As a developer of a kudo framework you have to author three artifacts. The framework-type, the framework-implementation (aka framework-version), and the framework-instance. The artifacts are usually placed in individual files respectively, but you can also just place them in one file which is often handy when you prototype something.
+
+In the following we describe the roles that each of the artifacts plays and what they capture.
 
 #### framework-type
 The framework type defines a type of service, e.g. elastic.
@@ -52,5 +56,4 @@ The framework instance defines a configured instance of a framework implementati
 * eg for backup and restore
 
 ### unit 5: controlled parameter updates
-
 ...
