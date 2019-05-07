@@ -25,14 +25,14 @@ The framework type defines a type of service, e.g. elastic.
 The framework implementation defines the implementation of a framework type, e.g. an elastic implementation. A framework implementation has a version.
 
 A framework implementation consists of the following.
-* parameters
+* `parameters`
   * Parameters allow for the configuration of you framework implementation templates on instantiation.
-* templates
+* `templates`
   * Templates define the resources that can be applied by this framework implementation.
   * Templates like config maps, service, deployment, stateful set, ...
-* tasks
+* `tasks`
   * Tasks list the resource templates that get applied together.
-* plans
+* `plans`
   * Plans consists of one or more phases.
   * Phases consists of one or more steps.
   * Steps contain one or more tasks.

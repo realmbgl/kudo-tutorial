@@ -118,3 +118,17 @@ spec:
   parameters:
     WHO: "Matt"
 ```
+
+### Run the framework instance
+
+If you haven't already then clone the `kudo-tutorial` repository.
+
+```
+git clone https://github.com/realmbgl/kudo-tutorial.git
+```
+
+From the `unit1` folder use the following command to run the instance.
+
+```
+kubectl apply -f myservice.yaml
+```
