@@ -55,7 +55,7 @@ The framework instance defines a configured instance of a framework implementati
 * showing that upgrade req special consideration for example in the es case not to panic
 
 ### unit 4: custom plans
-* eg for backup and restore
+* backup and restore
 
 ### unit 5: controlled parameter updates
 ...
