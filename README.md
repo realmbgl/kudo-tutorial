@@ -14,9 +14,9 @@ See [here](https://github.com/kudobuilder/kudo#deploy-your-first-application).
 
 ### artifacts that make a kudo framework
 
-As a developer of a kudo framework you have to author three artifacts. The framework-type, the framework-implementation (aka framework-version), and the framework-instance. The artifacts are usually placed in individual files respectively, but you can also just place them in one file which is often handy when you prototype something.
+As a developer of a kudo framework you have to author three `YAML` artifacts. The `framework-type`, the `framework-implementation` (aka framework-version), and the `framework-instance`. The artifacts are usually placed in individual YAML files respectively, but you can also just place them in one YAML file which is often handy when you prototype something.
 
-In the following we describe the roles that each of the artifacts plays and what they capture.
+In the following we describe the roles that each of the YAML artifacts plays and what they capture.
 
 #### framework-type
 The framework type defines a type of service, e.g. elastic.
@@ -45,8 +45,9 @@ The framework instance defines a configured instance of a framework implementati
 ### [unit 1](unit1/README.md): parameters, templates, tasks, and plans in action
 * getting an intuitive understanding of the framework implementation spec concepts
 
-### unit 2: a stateful service
-* using a stateful set template
+### [unit 2](unit2/README.md): a stateful service
+* using a stateful, and headless service template
+* showcasing init containers
 * showcasing persistent volumes
 * showcasing instance update, showing scaling
 
