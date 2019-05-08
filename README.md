@@ -43,10 +43,10 @@ A framework implementation consists of the following.
 The framework instance defines a configured instance of a framework implementation, e.g. an elastic instance.
 
 ### [unit 1](unit1): parameters, templates, tasks, and plans in action
-* getting an intuitive understanding of the framework implementation spec concepts
+* showcasing the core framework implementation spec concepts
 
 ### [unit 2](unit2): a stateful service
-* using a stateful, and headless service template
+* showcasing stateful service, and headless service templates
 * showcasing init containers
 * showcasing persistent volumes
 * showcasing instance update, showing scaling
@@ -56,4 +56,4 @@ The framework instance defines a configured instance of a framework implementati
 * showcasing controlled parameter updates
 
 ### [unit 4](unit4): custom plans
-* backup and restore
+* showcasing backup and restore
