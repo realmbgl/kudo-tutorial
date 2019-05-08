@@ -15,3 +15,5 @@ spec:
     type: FrameworkVersions
   parameters:
     NODE_COUNT: "3"
+    ACCESS_KEY: "..."
+    SECRET_KEY: "..."

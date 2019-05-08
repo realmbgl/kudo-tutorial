@@ -1,5 +1,8 @@
 
 
+## raw story
+
+add data
 ```
 curl -X POST "myes-node-0.myes-hs:9200/twitter/_doc/" -H 'Content-Type: application/json' -d'
 {
@@ -10,29 +13,43 @@ curl -X POST "myes-node-0.myes-hs:9200/twitter/_doc/" -H 'Content-Type: applicat
 '
 ```
 
-
+search it
 ```
 curl -X GET "myes-node-0.myes-hs:9200/twitter/_search?q=user:kimchy&pretty"
 ```
 
-```
-bin/elasticsearch-keystore add s3.client.default.access_key
-bin/elasticsearch-keystore add s3.client.default.secret_key
-```
 
-```
-curl -X POST "myes-node-0.myes-hs:9200/_nodes/reload_secure_settings"
-```
 
+create backup repo
 ```
-curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/m" -H 'Content-Type: application/json' -d'
+curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_backup" -H 'Content-Type: application/json' -d'
 {
   "type": "s3",
   "settings": {
-    "bucket": "es_bucket",
-    "client": "default",
-    "endpoint": "http://http://a8667773a71ce11e988bb0ab3e78e711-57018547.us-west-2.elb.amazonaws.com:9000"
+    "bucket": "es-bucket",
+    "endpoint": "a8667773a71ce11e988bb0ab3e78e711-57018547.us-west-2.elb.amazonaws.com:9000",
+    "protocol": "http"
   }
 }
 '
 ```
+
+snapshot
+```
+curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_backup/snapshot_1?wait_for_completion=true"
+```
+
+look in minio
+
+delete the index
+```
+curl -X DELETE "myes-node-0.myes-hs:9200/twitter"
+```
+
+restore it
+```
+curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_backup/snapshot_1/_restore"
+
+```
+
+check that the data is back
