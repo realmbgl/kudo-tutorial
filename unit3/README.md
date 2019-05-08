@@ -12,5 +12,6 @@
 ```
 
 ```
-... controlled parameter change plan not triggered ...
+2019/05/07 21:03:21 InstanceController: Instance myes updated parameter TEST, but no specified trigger.  Using default plan update
+... hm but I specified one ...
 ```

@@ -16,7 +16,7 @@ parameters:
     default: "Ravi"
 ```
 
-Besides the keys shown in the sample a parameter can have the following additional keys `description`, `displayName`, and `required`.
+Besides the keys shown in the sample a parameter can have the following additional keys `description`, `displayName`, `required`, and `update`.
 
 
 #### templates

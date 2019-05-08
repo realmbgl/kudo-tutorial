@@ -15,4 +15,3 @@ spec:
     type: FrameworkVersions
   parameters:
     NODE_COUNT: "3"
-    TEST: "007"

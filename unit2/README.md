@@ -1,6 +1,6 @@
 ## unit 2: a stateful service
 
-This unit uses `elasticsearch` as base technology to showcase how to develop a stateful service.
+This unit uses `elasticsearch` as base technology to showcase how to develop a stateful framework.
 
 In this unit we use separate YAML files for framework type, implementation, and instance. The files are the following.
 
@@ -102,9 +102,9 @@ The StatefulSet has a `template` section that holds the specification of each po
 
 The `template` section has a `spec` section which has the `initContainers` and `containers` specification of the pod.
 
-`containers` shows how in our sample the elasticsearch base technology is used. The container configuration is done via environment variables (alternatively could also be done via a config map). It also shows where the claimed volume is to be mounted in the container.
+`containers` shows how in our sample the elasticsearch base technology is used. The container configuration is done via environment variables (alternatively could also be done via a config map as shown in unit 1). It also shows where the claimed volume is to be mounted in the container.
 
-`initContainers` come handy if the base technology requires goofy stuff, like elasticsearch needs the `vm.max_map_count` setting, and also allow access to the mounted volume by the elasticsearch user that the container runs under (UID=1000, AND GID=1000).
+`initContainers` come handy if the base technology requires some goofy stuff, like elasticsearch needs the `vm.max_map_count` setting, and also allow access to the mounted volume by the elasticsearch user that the container runs under (UID=1000, AND GID=1000).
 
 #### tasks
 
@@ -170,7 +170,7 @@ From the `unit2` folder use the following command to run the instance.
 kubectl apply -f .
 ```
 
-Once the install finished we should see the following pods.
+Once the install is finished we should see the following pods.
 ```
 kubectl get pods
 
@@ -196,7 +196,7 @@ From the `unit2` folder use the following command to update the instance.
 kubectl apply -f elastic.yaml
 ```
 
-Once the update finished we should see an additional pod `myes-node-3`.
+Once the update is finished we should see an additional pod `myes-node-3`.
 
 ```
 kubectl get pods

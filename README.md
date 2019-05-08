@@ -19,17 +19,17 @@ As a developer of a kudo framework you have to author three `YAML` artifacts. Th
 In the following we describe the roles that each of the YAML artifacts plays and what they capture.
 
 #### framework-type
-The framework type defines a type of service, e.g. elastic.
+The framework type defines a type of service, e.g. elastic, kafka, ... .
 
 #### framework-implementation
-The framework implementation defines the implementation of a framework type, e.g. an elastic implementation. A framework implementation has a version.
+The framework implementation defines the implementation of a framework type, e.g. an elastic, kafka, ... implementation. A framework implementation has a version.
 
 A framework implementation consists of the following.
 * `parameters`
   * Parameters allow for the configuration of you framework implementation templates on instantiation.
 * `templates`
   * Templates define the resources that can be applied by this framework implementation.
-  * Templates like config maps, service, deployment, stateful set, ...
+  * Templates are config maps, service, deployment, stateful set, ...
 * `tasks`
   * Tasks list the resource templates that get applied together.
 * `plans`
@@ -40,20 +40,20 @@ A framework implementation consists of the following.
   * Both phases and also steps can be configured with an execution strategy, either serial or parallel.
 
 #### framework-instance
-The framework instance defines a configured instance of a framework implementation, e.g. an elastic instance.
+The framework instance defines a configured instance of a framework implementation, e.g. an elastic, kafka, ... instance.
 
 ### [unit 1](unit1): parameters, templates, tasks, and plans in action
 * showcasing the core framework implementation spec concepts
 
 ### [unit 2](unit2): a stateful service
-* showcasing stateful service, and headless service templates
-* showcasing init containers
+* showcasing stateful set, and headless service templates
+* showcasing containers, and init containers
 * showcasing persistent volumes
 * showcasing instance update, showing scaling
 
-### [unit 3](unit3): update and upgrade plans
+### (WIP) [unit 3](unit3): update and upgrade plans
 * showcasing update and upgrade Plans
 * showcasing controlled parameter updates
 
-### [unit 4](unit4): custom plans
+### (WIP) [unit 4](unit4): custom plans
 * showcasing backup and restore
