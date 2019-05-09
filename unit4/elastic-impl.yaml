@@ -21,6 +21,8 @@ spec:
       default: ""
     - name: SECRET_KEY
       default: ""
+    - name: RESTORE_SNAPSHOT_ID
+      default: ""
   templates:
     service.yaml: |
       kind: Service
@@ -113,8 +115,8 @@ spec:
           spec:
             restartPolicy: OnFailure
             containers:
-              - name: bb
-                image: busybox
+              - name: backup
+                image: centos:7
                 command:
                   - sh
                   - -c
@@ -124,13 +126,33 @@ spec:
                      "type": "s3",
                      "settings": {
                        "bucket": "es-bucket",
-                       "endpoint": "a8667773a71ce11e988bb0ab3e78e711-57018547.us-west-2.elb.amazonaws.com:9000",
+                       "endpoint": "minio-kubeaddons.kubeaddons:9000",
                        "protocol": "http"
                      }
                     }
                     ';
-                    TS = date +%s;
-                    curl -X PUT myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_$TS?wait_for_completion=true
+                    TS=$(date +%s);
+                    curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_$TS?wait_for_completion=true&pretty"
+    restore.yaml: |
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: {{PLAN_NAME}}-job
+        namespace: default
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            restartPolicy: OnFailure
+            containers:
+              - name: restore
+                image: centos:7
+                command:
+                  - sh
+                  - -c
+                  - |
+                    curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/{{RESTORE_SNAPSHOT_ID}}/_restore?pretty"
   tasks:
     deploy-task:
       resources:
@@ -139,6 +161,9 @@ spec:
     backup-task:
       resources:
         - backup.yaml
+    restore-task:
+      resources:
+        - restore.yaml
   plans:
     deploy:
       strategy: serial
@@ -158,3 +183,12 @@ spec:
             - name: backup-step
               tasks:
                 - backup-task
+    restore:
+      strategy: serial
+      phases:
+        - name: restore-phase
+          strategy: serial
+          steps:
+            - name: restore-step
+              tasks:
+                - restore-task
