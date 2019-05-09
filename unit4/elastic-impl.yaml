@@ -69,8 +69,8 @@ spec:
               - name: elastic
                 image: elasticsearch:7.0.0
                 command:
-                  - 'sh'
-                  - '-c'
+                  - sh
+                  - -c
                   - |
                     /usr/share/elasticsearch/bin/elasticsearch-plugin install repository-s3 -b;
                     /usr/share/elasticsearch/bin/elasticsearch-keystore create
@@ -100,11 +100,66 @@ spec:
               resources:
                 requests:
                   storage: 1Gi
+    backup.yaml: |
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: {{PLAN_NAME}}-job
+        namespace: default
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            restartPolicy: OnFailure
+            containers:
+              - name: bb
+                image: busybox
+                command:
+                  - sh
+                  - -c
+                  - |
+                    curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository" -H 'Content-Type: application/json' -d'
+                    {
+                     "type": "s3",
+                     "settings": {
+                       "bucket": "es-bucket",
+                       "endpoint": "a8667773a71ce11e988bb0ab3e78e711-57018547.us-west-2.elb.amazonaws.com:9000",
+                       "protocol": "http"
+                     }
+                    }
+                    ';
+                    curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_1?wait_for_completion=true"
+    restore.yaml: |
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: {{PLAN_NAME}}-job
+        namespace: default
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            restartPolicy: OnFailure
+            containers:
+              - name: bb
+                image: busybox
+                command:
+                  - sh
+                  - -c
+                  - curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_backup/snapshot_1/_restore"
   tasks:
     deploy-task:
       resources:
         - service.yaml
         - node.yaml
+    backup-task:
+      resources:
+        - backup.yaml
+    restore-task:
+      resources:
+        - restore.yaml
   plans:
     deploy:
       strategy: serial
@@ -115,3 +170,21 @@ spec:
             - name: deploy-step
               tasks:
                 - deploy-task
+    backup:
+      strategy: serial
+      phases:
+        - name: backup-phase
+          strategy: serial
+          steps:
+            - name: backup-step
+              tasks:
+                - backup-task
+    restore:
+      strategy: serial
+      phases:
+        - name: restore-phase
+          strategy: serial
+          steps:
+            - name: restore-step
+              tasks:
+                - restore-task

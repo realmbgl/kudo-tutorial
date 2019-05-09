@@ -22,7 +22,7 @@ curl -X GET "myes-node-0.myes-hs:9200/twitter/_search?q=user:kimchy&pretty"
 
 create backup repo
 ```
-curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_backup" -H 'Content-Type: application/json' -d'
+curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository" -H 'Content-Type: application/json' -d'
 {
   "type": "s3",
   "settings": {
