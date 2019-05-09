@@ -1,6 +1,6 @@
 ## unit 4: custom plans
 
-This unit builds on `unit 2` showcasing custom backup and restore plan using `elasticsearch` [snapshot and restore](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html). There are various repository plugins for elasticsearch snapshot restore, in this unit we are using the [repository-s3 plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/7.0/repository-s3.html). The unit requires that a `MinIO` (an S3 compatible store) instance is running in the kubernetes cluster with the folling DNS name `minio-kubeaddons.kubeaddons`.
+This unit builds on `unit 2` showcasing custom backup and restore plans using `elasticsearch` [snapshot and restore](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html). There are various repository plugins for elasticsearch snapshot restore, in this unit we are using the [repository-s3 plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/7.0/repository-s3.html). The unit requires that a `MinIO` (an S3 compatible store) instance is running in the kubernetes cluster with the following DNS name `minio-kubeaddons.kubeaddons`.
 
 The YAML files of the framework are the following.
 
@@ -16,7 +16,7 @@ The YAML files of the framework are the following.
 
 #### parameters
 
-The sample has three additional configuration. The `ACCESS_KEY` and `SECRET_KEY` for the `MinIO` instance, and the `RESTORE_SNAPSHOT_ID` that we will have to set before running the resource plan.
+The sample has three additional configuration parameters. The `ACCESS_KEY` and `SECRET_KEY` for the `MinIO` instance, and the `RESTORE_SNAPSHOT_ID` that we will have to set before running the restore plan.
 
 ```yaml
 parameters:
@@ -32,7 +32,7 @@ parameters:
 
 #### templates
 
-The `container` section in the `node.yaml` template now has an explicit command key that we need to install the `repository-s3` plugin, and to add `ACCESS_KEY` and `SECRET_KEY` to the `elasticsearch-keystore`.
+The `container` section in the `node.yaml` template now has an explicit command setting that we need to install the `repository-s3` plugin, and to add `ACCESS_KEY` and `SECRET_KEY` to the `elasticsearch-keystore`.
 
 
 ```yaml
@@ -134,7 +134,7 @@ tasks:
 
 #### plans
 
-This sample has two custom plans, a `backup` and a `restore` plan.
+This sample has two custom plans. THe `backup` and a `restore` plan.
 
 ```yaml
 backup:
@@ -160,7 +160,7 @@ restore:
 
 ### framework instance
 
-The sample sets the `NODE_COUNT` parameter to the value `3`. `ACCESS_KEY` and `SECRET_KEY` are required by the `repository-s3` plugin. The `RESTORE_SNAPSHOT_ID` will have to be set and the instance applied before the `restore` plan.
+The instance has to configure `ACCESS_KEY` and `SECRET_KEY` for the `repository-s3` plugin. The `RESTORE_SNAPSHOT_ID` will have to be set and the instance applied again before a run of the `restore` plan.
 
 ```yaml
 parameters:
