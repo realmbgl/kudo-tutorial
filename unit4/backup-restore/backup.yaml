@@ -1,0 +1,18 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: PlanExecution
+metadata:
+  name: backup
+  namespace: default
+  ownerReferences:
+    - apiVersion: kudo.k8s.io/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Instance
+      name: myes
+      uid: e4c10faa-727d-11e9-80a1-0a97366f7696
+spec:
+  instance:
+    kind: Instance
+    name: myes
+    namespace: default
+  planName: backup
