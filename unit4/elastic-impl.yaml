@@ -129,26 +129,8 @@ spec:
                      }
                     }
                     ';
-                    curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_1?wait_for_completion=true"
-    restore.yaml: |
-      apiVersion: batch/v1
-      kind: Job
-      metadata:
-        name: {{PLAN_NAME}}-job
-        namespace: default
-      spec:
-        template:
-          metadata:
-            name: {{PLAN_NAME}}-job
-          spec:
-            restartPolicy: OnFailure
-            containers:
-              - name: bb
-                image: busybox
-                command:
-                  - sh
-                  - -c
-                  - curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_backup/snapshot_1/_restore"
+                    TS = date +%s;
+                    curl -X PUT myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_$TS?wait_for_completion=true
   tasks:
     deploy-task:
       resources:
@@ -157,9 +139,6 @@ spec:
     backup-task:
       resources:
         - backup.yaml
-    restore-task:
-      resources:
-        - restore.yaml
   plans:
     deploy:
       strategy: serial
@@ -179,12 +158,3 @@ spec:
             - name: backup-step
               tasks:
                 - backup-task
-    restore:
-      strategy: serial
-      phases:
-        - name: restore-phase
-          strategy: serial
-          steps:
-            - name: restore-step
-              tasks:
-                - restore-task
