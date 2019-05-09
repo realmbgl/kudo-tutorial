@@ -55,5 +55,5 @@ The framework instance defines a configured instance of a framework implementati
 * showcasing update and upgrade Plans
 * showcasing controlled parameter updates
 
-### (WIP) [unit 4](unit4): custom plans
+### [unit 4](unit4): custom plans
 * showcasing backup and restore
