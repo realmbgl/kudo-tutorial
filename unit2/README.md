@@ -11,6 +11,16 @@ In this unit we use separate YAML files for framework type, implementation, and 
 
 ### framework implementation
 
+#### parameters
+
+The sample has one configuration parameter named `NODE_COUNT`, the number of nodes in the elasticsearch cluster, it defaults to `3`.
+
+```yaml
+parameters:
+  - name: NODE_COUNT
+    default: "3"
+```
+
 #### templates
 
 The sample has two resource templates, one is of type `Service` the other of type `StatefulSet`.
