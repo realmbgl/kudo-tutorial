@@ -1,6 +1,6 @@
 ## unit 4: custom plans
 
-This unit builds on `unit 2` showcasing how `update`, and `upgrade` plans get triggered. It also showcase `controlled parameter update` can be triggered.
+This unit builds on `unit 2` showcasing how `update`, and `upgrade` plans get triggered. It also showcases how `controlled parameter update` can be triggered.
 
 The YAML files of the framework are the following.
 
@@ -15,7 +15,7 @@ The YAML files of the framework are the following.
 
 #### parameters
 
-The sample has an additional `TEST` parameter, to showcase `controlle parameter update`. The `trigger` key of the `TEST` parameter points to the `super` plan to be executed on update.
+The sample has an additional `TEST` parameter, to showcase `controlled parameter update`. The `trigger` key of the `TEST` parameter points to the `super` plan to be executed on update.
 
 ```yaml
 parameters:
@@ -55,7 +55,7 @@ super-task:
 
 #### plans
 
-This sample has not only the `deploy` plan, but also `update`, `upgrade`, and a `super` plan.
+The sample has not only the `deploy` plan, but also `update`, `upgrade`, and a `super` plans.
 
 ```yaml
 plans:
@@ -167,9 +167,9 @@ Looking at the kudo logs you will see that the `update` plan executed for this.
 ```
 
 
-### Update the framework instance to use a newer framework implementation
+### Upgrade the framework instance to use a newer framework implementation
 
-In the `elastic.yaml` update the frameworkVersion name to `elastic-v2`. v2 uses a newer elasticsearch docker image.
+In the `elastic.yaml` upgrade the frameworkVersion name to `elastic-v2`. v2 uses a newer elasticsearch docker image.
 
 ```
 spec:
