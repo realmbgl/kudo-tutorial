@@ -51,7 +51,7 @@ The framework instance defines a configured instance of a framework implementati
 * showcasing persistent volumes
 * showcasing instance update, showing scaling
 
-### (WIP) [unit 3](unit3): update and upgrade plans
+### [unit 3](unit3): update and upgrade plans
 * showcasing update and upgrade Plans
 * showcasing controlled parameter updates
 
