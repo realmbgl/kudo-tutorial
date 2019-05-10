@@ -19,7 +19,7 @@ spec:
       default: "3"
     - name: TEST
       default: "0"
-      update: super
+      trigger: super
   templates:
     service.yaml: |
       kind: Service
