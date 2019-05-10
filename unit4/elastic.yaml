@@ -15,5 +15,6 @@ spec:
     type: FrameworkVersions
   parameters:
     NODE_COUNT: "3"
-    ACCESS_KEY: "..."
-    SECRET_KEY: "..."
+    ACCESS_KEY: "your-access-key"
+    SECRET_KEY: "your-secret-key"
+    RESTORE_SNAPSHOT_ID: ""
