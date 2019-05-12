@@ -2,12 +2,12 @@
 
 ## install kudo
 
-See [here](https://kudo.dev/docs/getting-started/.) and [here](https://github.com/kudobuilder/kudo).
+Follow the install instructions on [kudo.dev](https://kudo.dev/docs/getting-started/).
 
 
 ## install and operate kudo frameworks
 
-See [here](https://github.com/kudobuilder/kudo#deploy-your-first-application).
+Install and operate you first kudo framework using [kafka](https://kudo.dev/docs/examples/apache-kafka/) as the sample.s
 
 
 ## develop kudo frameworks
