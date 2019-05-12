@@ -190,6 +190,42 @@ myes-node-1   1/1     Running   0          121m
 myes-node-2   1/1     Running   0          121m
 ```
 
+Lets check on the elasticsearch clusters health.
+
+Exec into one of the POD's.
+
+```
+kubectl exec -ti myes-node-2 bash
+```
+
+Use the following curl command to check the health of the cluster.
+
+```
+curl myes-node-0.myes-hs:9200/_cluster/health?pretty
+```
+
+You should see the following output, showing the cluster status `green`.
+
+```
+{
+  "cluster_name" : "myes-cluster",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 3,
+  "number_of_data_nodes" : 3,
+  "active_primary_shards" : 0,
+  "active_shards" : 0,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 100.0
+}
+```
+
 
 ### Update the framework instance to scale to 4 nodes
 
