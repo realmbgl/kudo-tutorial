@@ -7,7 +7,7 @@ Follow the install instructions on [kudo.dev](https://kudo.dev/docs/getting-star
 
 ## install and operate kudo frameworks
 
-Install and operate you first kudo framework using [kafka](https://kudo.dev/docs/examples/apache-kafka/) as the sample.s
+Install and operate you first kudo framework using [kafka](https://kudo.dev/docs/examples/apache-kafka/) as the sample.
 
 
 ## develop kudo frameworks
