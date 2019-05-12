@@ -2,7 +2,7 @@
 
 ## install kudo
 
-Follow the install instructions on [kudo.dev](https://kudo.dev/docs/getting-started/).
+Follow the install instructions on [kudo.dev](https://kudo.dev/docs/getting-started/) .
 
 
 ## install and operate kudo frameworks
