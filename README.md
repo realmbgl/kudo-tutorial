@@ -1,4 +1,6 @@
-# kudo-tutorial
+# kudo tutorial
+
+<img src="https://kudo.dev/images/kudo_horizontal_color.png" srcset="https://kudo.dev/images/kudo_horizontal_color@2x.png 2x" width="256">
 
 ## install kudo
 
