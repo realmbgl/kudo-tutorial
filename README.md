@@ -2,6 +2,8 @@
 
 <img src="https://kudo.dev/images/kudo_horizontal_color.png" srcset="https://kudo.dev/images/kudo_horizontal_color@2x.png 2x" width="256">
 
+Developing `Kubernetes` operators using `KUDO`, the Kubernetes Universal Declarative Operator. KUDO provides a declarative approach to building production-grade Kubernetes Operators covering the entire application lifecycle.
+
 ## install kudo
 
 Follow the install instructions on [kudo.dev](https://kudo.dev/docs/getting-started/) .
