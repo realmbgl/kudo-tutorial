@@ -16,7 +16,7 @@ kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs
 More on the kudo operator install at [kudo.dev](https://kudo.dev/docs/getting-started/) .
 
 
-Kudo comes with its own `kubectl` CLI plugin. On `Mac OS X` you can install it using `brew`.
+Kudo comes with its own `kubectl CLI plugin`. On `Mac OS X` you can install it using `brew`.
 
 ```
 brew tap kudobuilder/tap
