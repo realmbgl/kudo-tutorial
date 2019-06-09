@@ -1,12 +1,12 @@
-## unit 4: custom plans
+## unit 3: custom plans
 
 This unit builds on `unit 2` showcasing how `update`, and `upgrade` plans get triggered. It also showcases how `controlled parameter update` can be triggered.
 
 The YAML files of the framework are the following.
 
 * [elastic-type.yaml](elastic-type.yaml) - the framework type
-* [elastic-impl.yaml](elastic-impl-v1.yaml) - the v1 framework implementation
-* [elastic-impl.yaml](elastic-impl-v2.yaml) - the v2 framework implementation
+* [elastic-impl-v1.yaml](elastic-impl-v1.yaml) - the v1 framework implementation
+* [elastic-impl-v2.yaml](elastic-impl-v2.yaml) - the v2 framework implementation
 * [elastic.yaml](elastic.yaml) - the framework instance
 
 
@@ -119,17 +119,20 @@ kubectl apply -f .
 
 Once the install is finished we should see the following pods.
 ```
-kkubectl get pods
+kubectl get pods
 NAME          READY   STATUS    RESTARTS   AGE
 myes-node-0   1/1     Running   0          42m
 myes-node-1   1/1     Running   0          41m
 myes-node-2   1/1     Running   0          41m
 ```
 
-Looking at the kudo logs you will see that the `deploy` plan executed for this.
+Lets check on the plan execution history using the kudo cli, we see the `deploy plan` has been executed.
 
 ```
-2019/05/07 17:43:20 PlanExecutionController: PlanExecution "myes-deploy-146529000" has already run to completion, not processing.
+kudo plan history --instance=myes
+History of all plan-executions for instance "myes" in namespace "default":
+.
+└── myes-deploy-206753060 (created 4h18m37s ago)
 ```
 
 
@@ -160,10 +163,14 @@ myes-node-3   1/1     Running   0          70s
 
 ```
 
-Looking at the kudo logs you will see that the `update` plan executed for this.
+Lets check on the plan execution history using the kudo cli, we see the `update plan` has been executed.
 
 ```
-2019/05/07 17:46:18 PlanExecutionController: PlanExecution "myes-update-618849000" has already run to completion, not processing.
+kubectl kudo plan history --instance=myes
+History of all plan-executions for instance "myes" in namespace "default":
+.
+├── myes-deploy-206753060 (created 4h20m36s ago)
+└── myes-update-207626186 (created 39s ago)
 ```
 
 
@@ -184,10 +191,15 @@ From the `unit3` folder use the following command to update the instance.
 kubectl apply -f elastic.yaml
 ```
 
-Looking at the kudo logs you will see that the `upgrade` plan executed for this.
+Lets check on the plan execution history using the kudo cli, we see the `upgrade plan` has been executed.
 
 ```
-2019/05/07 17:56:39 PlanExecutionController: PlanExecution "myes-upgrade-861815000" has already run to completion, not processing.
+kubectl kudo plan history --instance=myes
+History of all plan-executions for instance "myes" in namespace "default":
+.
+├── myes-deploy-206753060 (created 4h22m0s ago)
+├── myes-update-207626186 (created 2m3s ago)
+└── myes-upgrade-521226614 (created 17s ago)
 ```
 
 Note: Currently not working [issue 208](https://github.com/kudobuilder/kudo/issues/208).
@@ -209,8 +221,14 @@ From the `unit3` folder use the following command to update the instance.
 kubectl apply -f elastic.yaml
 ```
 
-Looking at the kudo logs you will see that the `super` plan executed for this.
+Lets check on the plan execution history using the kudo cli, we see the `super plan` has been executed.
 
 ```
-2019/05/09 20:49:56 PlanExecutionController: PlanExecution "myes-super-955501000" has already run to completion, not processing.
+kubectl kudo plan history --instance=myes
+History of all plan-executions for instance "myes" in namespace "default":
+.
+├── myes-deploy-206753060 (created 4h23m46s ago)
+├── myes-super-133145198 (created 4s ago)
+├── myes-update-207626186 (created 3m49s ago)
+└── myes-upgrade-521226614 (created 2m3s ago)
 ```
