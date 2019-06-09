@@ -1,4 +1,4 @@
-## unit 3: custom plans
+## unit 3: update and upgrade plans
 
 This unit builds on `unit 2` showcasing how `update`, and `upgrade` plans get triggered. It also showcases how `controlled parameter update` can be triggered.
 
