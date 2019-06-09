@@ -132,3 +132,17 @@ From the `unit1` folder use the following command to run the instance.
 ```
 kubectl apply -f myservice.yaml
 ```
+
+Next enable localhost access to service.
+
+```
+kubectl port-forward myservice-pod 8080:80
+```
+
+[Click](http://localhost:8080/) to access the service from your browser.
+
+You should see the following
+
+```
+Matt, hello from myservice !!!
+```
