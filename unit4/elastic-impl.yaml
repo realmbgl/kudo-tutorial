@@ -17,10 +17,12 @@ spec:
   parameters:
     - name: NODE_COUNT
       default: "3"
-    - name: ACCESS_KEY
-      default: ""
-    - name: SECRET_KEY
-      default: ""
+    - name: S3_ACCESS_KEY
+      default: "minio"
+    - name: S3_SECRET_KEY
+      default: "minio123"
+    - name: S3_ENDPOINT
+      default: "minio:9000"
     - name: RESTORE_SNAPSHOT_ID
       default: ""
   templates:
@@ -29,7 +31,7 @@ spec:
       apiVersion: v1
       metadata:
         name: hs
-        namespace: {{NAMESPACE}}
+        namespace: {{ .Namespace }}
       spec:
         selector:
           app: elastic
@@ -42,13 +44,13 @@ spec:
       apiVersion: apps/v1
       metadata:
         name: node
-        namespace: {{NAMESPACE}}
+        namespace: {{ .Namespace }}
       spec:
         selector:
           matchLabels:
             app: elastic # has to match .spec.template.metadata.labels
-        serviceName: {{NAME}}-hs
-        replicas: {{NODE_COUNT}}
+        serviceName: {{ .Name }}-hs
+        replicas: {{ .Params.NODE_COUNT }}
         template:
           metadata:
             labels:
@@ -76,8 +78,8 @@ spec:
                   - |
                     /usr/share/elasticsearch/bin/elasticsearch-plugin install repository-s3 -b;
                     /usr/share/elasticsearch/bin/elasticsearch-keystore create
-                    echo {{ACCESS_KEY}} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key;
-                    echo {{SECRET_KEY}} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key;
+                    echo {{ .Params.S3_ACCESS_KEY }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key;
+                    echo {{ .Params.S3_SECRET_KEY }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key;
                     /usr/local/bin/docker-entrypoint.sh eswrapper
                 ports:
                   - containerPort: 9200
@@ -86,11 +88,11 @@ spec:
                     name:
                 env:
                   - name: cluster.name
-                    value: {{NAME}}-cluster
+                    value: {{ .Name }}-cluster
                   - name: discovery.seed_hosts
-                    value: {{NAME}}-node-0.{{NAME}}-hs,{{NAME}}-node-1.{{NAME}}-hs,{{NAME}}-node-2.{{NAME}}-hs
+                    value: {{ .Name }}-node-0.{{ .Name }}-hs,{{ .Name }}-node-1.{{ .Name }}-hs,{{ .Name }}-node-2.{{ .Name }}-hs
                   - name: cluster.initial_master_nodes
-                    value: {{NAME}}-node-0,{{NAME}}-node-1,{{NAME}}-node-2
+                    value: {{ .Name }}-node-0,{{ .Name }}-node-1,{{ .Name }}-node-2
                 volumeMounts:
                   - name: data
                     mountPath: /usr/share/elasticsearch/data
@@ -106,12 +108,12 @@ spec:
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: {{PLAN_NAME}}-job
+        name: {{ .PlanName }}-job
         namespace: default
       spec:
         template:
           metadata:
-            name: {{PLAN_NAME}}-job
+            name: {{ .PlanName }}-job
           spec:
             restartPolicy: OnFailure
             containers:
@@ -126,7 +128,7 @@ spec:
                      "type": "s3",
                      "settings": {
                        "bucket": "es-bucket",
-                       "endpoint": "minio-kubeaddons.kubeaddons:9000",
+                       "endpoint": "{{ .Params.S3_ENDPOINT }}",
                        "protocol": "http"
                      }
                     }
@@ -137,12 +139,12 @@ spec:
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: {{PLAN_NAME}}-job
+        name: {{ .PlanName }}-job
         namespace: default
       spec:
         template:
           metadata:
-            name: {{PLAN_NAME}}-job
+            name: {{ .PlanName }}-job
           spec:
             restartPolicy: OnFailure
             containers:
@@ -152,7 +154,7 @@ spec:
                   - sh
                   - -c
                   - |
-                    curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/{{RESTORE_SNAPSHOT_ID}}/_restore?pretty"
+                    curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/{{ .Params.RESTORE_SNAPSHOT_ID }}/_restore?pretty"
   tasks:
     deploy-task:
       resources:
