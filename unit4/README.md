@@ -253,11 +253,15 @@ You should see the following output.
 
 ### Run the backup plan
 
-Before doing this the first time you need to go to your `MinIO` instance and create a bucket named `es-bucket` with policy `Read and Write`. You can do this via the `MinIO` console. Enable localhost access to `MinIO`, and enter `localhost:9000` to access the console
+Before doing this the first time you need to go to your `MinIO` instance and create a bucket named `es-bucket` with policy `Read and Write`. You can do this via the `MinIO` console. 
+
+Enable localhost access to the `MinIO` service.
 
 ```
 kubectl port-forward service/minio 9000
 ```
+
+[Click](http://localhost:9000/) to access the `MinIO console` from your browser.
 
 Next apply the backup plan from the `unit4` folder.
 
