@@ -26,7 +26,7 @@ spec:
       apiVersion: v1
       metadata:
         name: hs
-        namespace: {{NAMESPACE}}
+        namespace: {{ .Namespace }}
       spec:
         selector:
           app: elastic
@@ -39,13 +39,13 @@ spec:
       apiVersion: apps/v1
       metadata:
         name: node
-        namespace: {{NAMESPACE}}
+        namespace: {{ .Namespace }}
       spec:
         selector:
           matchLabels:
             app: elastic # has to match .spec.template.metadata.labels
-        serviceName: {{NAME}}-hs
-        replicas: {{NODE_COUNT}}
+        serviceName: {{ .Name }}-hs
+        replicas: {{ .Params.NODE_COUNT }}
         template:
           metadata:
             labels:
@@ -66,7 +66,7 @@ spec:
             terminationGracePeriodSeconds: 10
             containers:
               - name: elastic
-                image: elasticsearch:7.0.1
+                image: elasticsearch:7.1.1
                 ports:
                   - containerPort: 9200
                     name: api
@@ -74,11 +74,11 @@ spec:
                     name:
                 env:
                   - name: cluster.name
-                    value: {{NAME}}-cluster
+                    value: {{ .Name }}-cluster
                   - name: discovery.seed_hosts
-                    value: {{NAME}}-node-0.{{NAME}}-hs,{{NAME}}-node-1.{{NAME}}-hs,{{NAME}}-node-2.{{NAME}}-hs
+                    value: {{ .Name }}-node-0.{{ .Name }}-hs,{{ .Name }}-node-1.{{ .Name }}-hs,{{ .Name }}-node-2.{{ .Name }}-hs
                   - name: cluster.initial_master_nodes
-                    value: {{NAME}}-node-0,{{NAME}}-node-1,{{NAME}}-node-2
+                    value: {{ .Name }}-node-0,{{ .Name }}-node-1,{{ .Name }}-node-2
                 volumeMounts:
                   - name: data
                     mountPath: /usr/share/elasticsearch/data

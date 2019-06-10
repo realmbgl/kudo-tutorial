@@ -33,16 +33,16 @@ spec:
       kind: ConfigMap
       metadata:
         name: config
-        namespace: {{NAMESPACE}}
+        namespace: {{ .Namespace }}
       data:
         index.html: |
-          {{WHO}}, hello from {{NAME}} !!!
+          {{ .Params.WHO }}, hello from {{ .Name }} !!!
     pod.yaml: |
       apiVersion: v1
       kind: Pod
       metadata:
         name: pod
-        namespace: {{NAMESPACE}}
+        namespace: {{ .Namespace }}
       spec:
         containers:
           - name: nginx
@@ -56,7 +56,7 @@ spec:
         volumes:
           - name: config
             configMap:
-              name: {{NAME}}-config
+              name: {{ .Name }}-config
   tasks:
     deploy-task:
       resources:

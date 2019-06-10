@@ -1,6 +1,6 @@
 ## unit 4: custom plans
 
-This unit builds on `unit 2` showcasing custom backup and restore plans using `elasticsearch` [snapshot and restore](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html). There are various repository plugins for elasticsearch snapshot restore, in this unit we are using the [repository-s3 plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/7.0/repository-s3.html). The unit requires that a `MinIO` (an S3 compatible store) instance is running in the kubernetes cluster with the following DNS name `minio-kubeaddons.kubeaddons`.
+This unit builds on `unit 2` showcasing custom backup and restore plans using `elasticsearch` [snapshot and restore](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html). There are various repository plugins for elasticsearch snapshot restore, in this unit we are using the [repository-s3 plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/7.0/repository-s3.html). The unit requires an S3 compatible store, we use `MinIO`. The `MinIO operator` install you can find [here](https://github.com/minio/minio-operator).
 
 The YAML files of the framework are the following.
 
@@ -16,16 +16,18 @@ The YAML files of the framework are the following.
 
 #### parameters
 
-The sample has three additional configuration parameters. The `ACCESS_KEY` and `SECRET_KEY` for the `MinIO` instance, and the `RESTORE_SNAPSHOT_ID` that we will have to set before running the restore plan.
+The sample has four additional configuration parameters. The `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_ENDPOINT` the defaults are set for the `MinIO` instance. There is also the `RESTORE_SNAPSHOT_ID` that we will have to set before running the restore plan.
 
 ```yaml
 parameters:
   - name: NODE_COUNT
     default: "3"
-  - name: ACCESS_KEY
-    default: ""
-  - name: SECRET_KEY
-    default: ""
+  - name: S3_ACCESS_KEY
+    default: "minio"
+  - name: S3_SECRET_KEY
+    default: "minio123"
+  - name: S3_ENDPOINT
+    default: "minio:9000"
   - name: RESTORE_SNAPSHOT_ID
     default: ""
 ```
@@ -46,8 +48,8 @@ containers:
       - |
         /usr/share/elasticsearch/bin/elasticsearch-plugin install repository-s3 -b;
         /usr/share/elasticsearch/bin/elasticsearch-keystore create
-        echo {{ACCESS_KEY}} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key;
-        echo {{SECRET_KEY}} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key;
+        echo {{ .Params.S3_ACCESS_KEY }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key;
+        echo {{ .Params.S3_SECRET_KEY }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key;
         /usr/local/bin/docker-entrypoint.sh eswrapper
 ...        
 ```
@@ -62,12 +64,12 @@ backup.yaml: |
   apiVersion: batch/v1
   kind: Job
   metadata:
-    name: {{PLAN_NAME}}-job
+    name: {{ .PlanName }}-job
     namespace: default
   spec:
     template:
       metadata:
-        name: {{PLAN_NAME}}-job
+        name: {{ .PlanName }}-job
       spec:
         restartPolicy: OnFailure
         containers:
@@ -82,7 +84,7 @@ backup.yaml: |
                  "type": "s3",
                  "settings": {
                    "bucket": "es-bucket",
-                   "endpoint": "minio-kubeaddons.kubeaddons:9000",
+                   "endpoint": "{{ .Params.S3_ENDPOINT }}",
                    "protocol": "http"
                  }
                 }
@@ -98,12 +100,12 @@ restore.yaml: |
   apiVersion: batch/v1
   kind: Job
   metadata:
-    name: {{PLAN_NAME}}-job
+    name: {{ .PlanName }}-job
     namespace: default
   spec:
     template:
       metadata:
-        name: {{PLAN_NAME}}-job
+        name: {{ .PlanName }}-job
       spec:
         restartPolicy: OnFailure
         containers:
@@ -134,7 +136,7 @@ tasks:
 
 #### plans
 
-This sample has two custom plans. THe `backup` and a `restore` plan.
+This sample has two custom plans. The `backup` and a `restore` plan.
 
 ```yaml
 backup:
@@ -160,13 +162,14 @@ restore:
 
 ### framework instance
 
-The instance has to configure `ACCESS_KEY` and `SECRET_KEY` for the `repository-s3` plugin. The `RESTORE_SNAPSHOT_ID` will have to be set and the instance applied again before a run of the `restore` plan.
+The instance has to configure `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_ENDPOINT` for the `repository-s3` plugin. The `RESTORE_SNAPSHOT_ID` will have to be set and the instance applied again before a run of the `restore` plan.
 
 ```yaml
 parameters:
   NODE_COUNT: "3"
-  ACCESS_KEY: "your-access-key"
-  SECRET_KEY: "your-secret-key"
+  S3_ACCESS_KEY: "minio"
+  S3_SECRET_KEY: "minio123"
+  S3_ENDPOINT: "minio:9000"
   RESTORE_SNAPSHOT_ID: ""
 ```
 
@@ -209,7 +212,7 @@ curl -X POST "myes-node-0.myes-hs:9200/twitter/_doc/" -H 'Content-Type: applicat
 Lets search for it.
 
 ```
-curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_backup/snapshot_1?wait_for_completion=true"
+curl -X GET "myes-node-0.myes-hs:9200/twitter/_search?q=user:kimchy&pretty"
 ```
 
 You should see the following output.
@@ -250,7 +253,15 @@ You should see the following output.
 
 ### Run the backup plan
 
-Before doing this the first time you need to go to your `MinIO` instance and create a bucket named `es-bucket` with policy `Read and Write`. You can do this via the `MinIO` console.
+Before doing this the first time you need to go to your `MinIO` instance and create a bucket named `es-bucket` with policy `Read and Write`. You can do this via the `MinIO` console. 
+
+Enable localhost access to the `MinIO` service.
+
+```
+kubectl port-forward service/minio 9000
+```
+
+[Click](http://localhost:9000/) to access the `MinIO console` from your browser.
 
 Next apply the backup plan from the `unit4` folder.
 
@@ -258,7 +269,7 @@ Next apply the backup plan from the `unit4` folder.
 kubectl apply -f backup-restore/backup.yaml
 ```
 
-Check the logs of the backup job for the id of the snapshot that got created. Should loo like follows, so the id for this backup is `snapshot_1557432189`.
+Check the logs of the backup job for the id of the snapshot that got created. Should look like follows, so the id for this backup is `snapshot_1557432189`.
 
 ```
 {
@@ -308,11 +319,12 @@ Back to the `unit4` folder.
 
 Since you can't pass input at the moment when applying a PlanExecution, we do the trick by updating the `elastic.yaml` instance configuration with the snapshot id to use for restore.
 
-```
+```yaml
 parameters:
   NODE_COUNT: "3"
-  ACCESS_KEY: "your-access-key"
-  SECRET_KEY: "your-secret-key"
+  S3_ACCESS_KEY: "minio"
+  S3_SECRET_KEY: "minio123"
+  S3_ENDPOINT: "minio:9000"
   RESTORE_SNAPSHOT_ID: "snapshot_1557432189"
 ```
 
@@ -339,5 +351,5 @@ kubectl exec -ti myes-node-2 bash
 Lets search for the data. You should see the same JSON document that we saw earlier.
 
 ```
-curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_backup/snapshot_1?wait_for_completion=true"
+curl -X GET "myes-node-0.myes-hs:9200/twitter/_search?q=user:kimchy&pretty"
 ```
