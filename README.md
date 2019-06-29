@@ -8,9 +8,9 @@ Developing `Kubernetes` operators using `KUDO`, the Kubernetes Universal Declara
 
 Run the following three commands to `install the kudo operator`.
 ```
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs/deployment/00-prereqs.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs/deployment/10-crds.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs/deployment/20-deployment.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/b49ff7d48547bff8c0d2a5fbc01d9ffbae49adbd/docs/deployment/00-prereqs.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/75603761df510597376f5b1cba01b7e7b8670cc1/docs/deployment/10-crds.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/75603761df510597376f5b1cba01b7e7b8670cc1/docs/deployment/20-deployment.yaml
 ```
 
 More on the kudo operator install at [kudo.dev](https://kudo.dev/docs/getting-started/) .
