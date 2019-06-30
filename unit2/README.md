@@ -4,24 +4,17 @@ This unit uses `elasticsearch` as base technology to showcase how to develop a s
 
 In this unit we use separate YAML files for framework type, implementation, and instance. The files are the following.
 
-* [elastic-type.yaml](elastic-type.yaml) - the framework type
-* [elastic-impl.yaml](elastic-impl.yaml) - the framework implementation
-* [elastic.yaml](elastic.yaml) - the framework instance
 
-
-### framework implementation
-
-#### parameters
+### [params.yaml](operator/params.yaml)
 
 The sample has one configuration parameter named `NODE_COUNT`, the number of nodes in the elasticsearch cluster, it defaults to `3`.
 
 ```yaml
-parameters:
-  - name: NODE_COUNT
-    default: "3"
+NODE_COUNT:
+  default: "3"
 ```
 
-#### templates
+### [templates](operator/templates)
 
 The sample has two resource templates, one is of type `Service` the other of type `StatefulSet`.
 
@@ -29,19 +22,20 @@ StatefulSets currently require a [Headless Service](https://kubernetes.io/docs/c
 
 The following shows the resource template for the `Headless Service`.
 
+[service.yaml](operator/service.yaml)
 ```yaml
-service.yaml: |
-  kind: Service
-  apiVersion: v1
-  metadata:
-    name: hs
-    namespace: {{NAMESPACE}}
-  spec:
-    selector:
-      app: elastic
-    ports:
-      - protocol: TCP
-        port: 9200
+kind: Service
+apiVersion: v1
+metadata:
+  name: hs
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    app: elastic
+  ports:
+    - protocol: TCP
+      port: 9200
+  clusterIP: None
     clusterIP: None
 ```
 
@@ -49,63 +43,65 @@ A [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statef
 
 The following shows the resource template for the `StaefulSet`.
 
+[node.yaml](operator/node.yaml)
 ```yaml
 
 node.yaml: |
-  kind: StatefulSet
-  apiVersion: apps/v1
-  metadata:
-    name: node
-    namespace: {{NAMESPACE}}
-  spec:
-    selector:
-      matchLabels:
-        app: elastic # has to match .spec.template.metadata.labels
-    serviceName: {{NAME}}-hs
-    replicas: {{NODE_COUNT}}
-    template:
-      metadata:
-        labels:
-          app: elastic # has to match .spec.selector.matchLabels
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: node
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: elastic # has to match .spec.template.metadata.labels
+  serviceName: {{ .Name }}-hs
+  replicas: {{ .Params.NODE_COUNT }}
+  template:
+    metadata:
+      labels:
+        app: elastic # has to match .spec.selector.matchLabels
+    spec:
+      initContainers:
+        - name: init-sysctl
+          image: busybox
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+          securityContext:
+            privileged: true
+        - name: volume-permissions
+          image: busybox
+          command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: elastic
+          image: elasticsearch:7.0.0
+          ports:
+            - containerPort: 9200
+              name: api
+            - containerPort: 9300
+              name:
+          env:
+            - name: cluster.name
+              value: {{ .Name }}-cluster
+            - name: discovery.seed_hosts
+              value: {{ .Name }}-node-0.{{ .Name }}-hs,{{ .Name }}-node-1.{{ .Name }}-hs,{{ .Name }}-node-2.{{ .Name }}-hs
+            - name: cluster.initial_master_nodes
+              value: {{ .Name }}-node-0,{{ .Name }}-node-1,{{ .Name }}-node-2
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
       spec:
-        initContainers:
-          - name: init-sysctl
-            image: busybox
-            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-            securityContext:
-              privileged: true
-          - name: volume-permissions
-            image: busybox
-            command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
-            volumeMounts:
-              - name: data
-                mountPath: /usr/share/elasticsearch/data
-        terminationGracePeriodSeconds: 10
-        containers:
-          - name: elastic
-            image: elasticsearch:7.0.0
-            ports:
-              - containerPort: 9200
-                name: api
-              - containerPort: 9300
-                name:
-            env:
-              - name: cluster.name
-                value: {{NAME}}-cluster
-              - name: discovery.seed_hosts
-                value: {{NAME}}-node-0.{{NAME}}-hs,{{NAME}}-node-1.{{NAME}}-hs,{{NAME}}-node-2.{{NAME}}-hs
-              - name: cluster.initial_master_nodes
-                value: {{NAME}}-node-0,{{NAME}}-node-1,{{NAME}}-node-2
-            volumeMounts:
-              - name: data
-                mountPath: /usr/share/elasticsearch/data
-    volumeClaimTemplates:
-      - metadata:
-          name: data
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          resources:
-            requests:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
 ```
 
 The StatefulSet has a `template` section that holds the specification of each pod in the set. It also has a `volumeClaimTemplate` for a persistent volume claim, this for a volume required by each pod in the set.
@@ -115,6 +111,8 @@ The `template` section has a `spec` section which has the `initContainers` and `
 `containers` shows how in our sample the elasticsearch base technology is used. The container configuration is done via environment variables (alternatively could also be done via a config map as shown in unit 1). It also shows where the claimed volume is to be mounted in the container.
 
 `initContainers` come handy if the base technology requires some goofy stuff, like elasticsearch needs the `vm.max_map_count` setting, and also allow access to the mounted volume by the elasticsearch user that the container runs under (UID=1000, AND GID=1000).
+
+### [operator.yaml](operator/operator.yaml)
 
 #### tasks
 
@@ -130,7 +128,7 @@ tasks:
 
 #### plans
 
-The sample has a `deploy` plan with a `deploy-phase` and a `deploy-step`. From the `deploy-step` the `deploy-task` is referenced. This task gets executed when a framework instance is applied.
+The sample has a `deploy` plan with a `deploy-phase` and a `deploy-step`. From the `deploy-step` the `deploy-task` is referenced. This task gets executed when an instance is created using the operator.
 
 ```yaml
 plans:
@@ -143,26 +141,6 @@ plans:
           - name: deploy-step
             tasks:
               - deploy-task
-
-```
-
-
-### framework instance
-
-The instance name is specified in the metadata section.
-```yaml
-metadata:
-  name: myes
-```
-
-The instance spec references the framework implementation to be used. The sample sets the `NODE_COUNT` parameter to the value `3`.
-```yaml
-spec:
-  frameworkVersion:
-    name: elastic-v1
-    namespace: default
-  parameters:
-    NODE_COUNT: "3"
 ```
 
 
@@ -174,10 +152,10 @@ If you haven't already then clone the `kudo-tutorial` repository.
 git clone https://github.com/realmbgl/kudo-tutorial.git
 ```
 
-From the `unit2` folder use the following command to run the instance.
+From the `unit2/operator` folder use the following command to install the operator and create an instance
 
 ```
-kubectl apply -f .
+kubectl kudo install . --instance myes
 ```
 
 Once the install is finished we should see the following pods.
@@ -228,6 +206,8 @@ You should see the following output, showing the cluster status `green`.
 
 
 ### Update the framework instance to scale to 4 nodes
+
+!!! old from here, need to find out how with v0.3.0 updates are done
 
 Update the `NODE_COUNT` parameter in `elastic.yaml` to `4`.
 
