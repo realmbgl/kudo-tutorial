@@ -41,15 +41,16 @@ As a developer of a kudo operator you have to author three types of `YAML` artif
 operator.yaml
 params.yaml
 templates/
-     <template-file>.yaml
+     <template>.yaml
      ...
 ```
 
 In the following we describe the roles that each of the YAML artifacts plays and what they capture.
 
 #### operator.yaml
+The operator file defines the operator behavior.
 
-An operator has a `name` (e.g kafka), and a `version`.
+It has a `name` (e.g kafka), and a `version`.
 
 `Tasks` list the resource templates that get applied together.
 
@@ -58,7 +59,7 @@ An operator has a `name` (e.g kafka), and a `version`.
 #### params.yaml
 The params file defines the parameters that can be used to configure an instance created by the operator. A parameter definition has a `name`, `default value`, `display name`, and `description`.
 
-#### <template-file>.yaml
+#### template.yaml
 A template file defines the resources that can be applied by operator tasks. Samples are `config maps`, `service`, `deployment`, `stateful set`, ... .
 
 
