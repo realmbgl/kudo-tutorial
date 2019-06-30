@@ -1,6 +1,6 @@
 ## unit 1: parameters, templates, tasks, and plans in action
 
-This unit uses a [operator sample](operator) to showcase the key kudo operator concepts parameters, templates, tasks, and plans.
+This unit uses an [operator sample](operator) to showcase the key kudo operator concepts parameters, templates, tasks, and plans.
 
 ### [params.yaml](operator/params.yaml)
 
@@ -62,7 +62,7 @@ spec:
 
 #### general
 
-In the general section the `name` of the operator and its `version` is defined. It also list the `kudo version` the operator works with
+In the general section the `name` of the operator and its `version` is defined. It also lists the `kudo version` the operator works with.
 
 ```
 name: "myservice"
