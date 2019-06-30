@@ -1,0 +1,22 @@
+name: "elastic"
+version: "0.1.0"
+kudoVersion: 0.3.0
+kubernetesVersion: 1.15.0
+maintainers:
+  - Michael Beisiegel <michael.beisiegel@gmail.com>
+url: https://github.com/realmbgl/kudo-tutorial
+tasks:
+  deploy-task:
+    resources:
+      - service.yaml
+      - node.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy-phase
+        strategy: parallel
+        steps:
+          - name: deploy-step
+            tasks:
+              - deploy-task
