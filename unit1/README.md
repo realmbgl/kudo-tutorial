@@ -127,10 +127,10 @@ If you haven't already then clone the `kudo-tutorial` repository.
 git clone https://github.com/realmbgl/kudo-tutorial.git
 ```
 
-From the `unit1` folder use the following command to run the instance.
+From the `unit1/operator` folder use the following command to run the instance.
 
 ```
-kubectl apply -f myservice.yaml
+kubectl kudo install . --instance myservice --parameter WHO=Matt
 ```
 
 Next enable localhost access to the service.
