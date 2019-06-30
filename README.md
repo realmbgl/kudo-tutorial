@@ -6,14 +6,14 @@ Developing `Kubernetes` operators using `KUDO`, the Kubernetes Universal Declara
 
 ## install kudo
 
-Run the following three commands to `install the kudo operator`.
+Run the following three commands to `install kudo`.
 ```
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/b49ff7d48547bff8c0d2a5fbc01d9ffbae49adbd/docs/deployment/00-prereqs.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/75603761df510597376f5b1cba01b7e7b8670cc1/docs/deployment/10-crds.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/75603761df510597376f5b1cba01b7e7b8670cc1/docs/deployment/20-deployment.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.0/docs/deployment/00-prereqs.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.0/docs/deployment/10-crds.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/99e0fe7980567ba94503f6385cd54dc5e7e6e90c/docs/deployment/20-deployment.yaml
 ```
 
-More on the kudo operator install at [kudo.dev](https://kudo.dev/docs/getting-started/) .
+More on the kudo install at [kudo.dev](https://kudo.dev/docs/getting-started/) .
 
 
 Kudo comes with its own `kubectl CLI plugin`. On `Mac OS X` you can install it using `brew`.
@@ -26,45 +26,44 @@ brew install kudo-cli
 More on the kudo CLI install at [kudo.dev](https://kudo.dev/docs/cli/) .
 
 
-## install and operate kudo frameworks
+## install and operate kudo operators
 
-Install and operate your first kudo framework using [kafka](https://kudo.dev/docs/examples/apache-kafka/) as the sample.
+Install and operate your first kudo operator using [kafka](https://kudo.dev/docs/examples/apache-kafka/) as the sample.
 
 
-## develop kudo frameworks
+## develop kudo operators
 
-### artifacts that make a kudo framework
+### kudo operator programming model
 
-As a developer of a kudo framework you have to author three `YAML` artifacts. The `framework-type`, the `framework-implementation` (aka framework-version), and the `framework-instance`. The artifacts are usually placed in individual YAML files respectively, but you can also just place them in one YAML file which is often handy when you prototype something.
+As a developer of a kudo operator you have to author three types of `YAML` artifacts in the following file folder structure.
+
+```
+operator.yaml
+params.yaml
+templates/
+     <template-file>.yaml
+     ...
+```
 
 In the following we describe the roles that each of the YAML artifacts plays and what they capture.
 
-#### framework-type
-The framework type defines a type of service, e.g. elastic, kafka, ... .
+#### operator.yaml
 
-#### framework-implementation
-The framework implementation defines the implementation of a framework type, e.g. an elastic, kafka, ... implementation. A framework implementation has a version.
+An operator has a `name` (e.g kafka), and a `version`.
 
-A framework implementation consists of the following.
-* `parameters`
-  * Parameters allow for the configuration of you framework implementation templates on instantiation.
-* `templates`
-  * Templates define the resources that can be applied by this framework implementation.
-  * Templates are config maps, service, deployment, stateful set, ...
-* `tasks`
-  * Tasks list the resource templates that get applied together.
-* `plans`
-  * Plans orchestrate tasks through phases and steps.
-  * Plans consists of one or more phases.
-  * Phases consists of one or more steps.
-  * Steps contain one or more tasks.
-  * Both phases and also steps can be configured with an execution strategy, either serial or parallel.
+`Tasks` list the resource templates that get applied together.
 
-#### framework-instance
-The framework instance defines a configured instance of a framework implementation, e.g. an elastic, kafka, ... instance.
+`Plans` orchestrate tasks through phases and steps. `Plans` consists of one or more `phases`. `Phases` consists of one or more `steps`. `Steps` contain one or more `tasks`. Both phases and also steps can be configured with an `execution strategy`, either `serial` or `parallel`.
+
+#### params.yaml
+The params file defines the parameters that can be used to configure an instance created by the operator. A parameter definition has a `name`, `default value`, `display name`, and `description`.
+
+#### <template-file>.yaml
+A template file defines the resources that can be applied by operator tasks. Samples are `config maps`, `service`, `deployment`, `stateful set`, ... .
+
 
 ### [unit 1](unit1): parameters, templates, tasks, and plans in action
-* showcasing the core framework implementation spec concepts
+* showcasing the core operator concepts
 
 ### [unit 2](unit2): a stateful service
 * showcasing stateful set, and headless service templates
