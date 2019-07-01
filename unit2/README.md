@@ -207,19 +207,10 @@ You should see the following output, showing the cluster status `green`.
 
 ### Update the framework instance to scale to 4 nodes
 
-!!! old from here, need to find out how with v0.3.0 updates are done
-
-Update the `NODE_COUNT` parameter in `elastic.yaml` to `4`.
+Lets increase the `NODE_COUNT` to `4` using the following command.
 
 ```
-parameters:
-  NODE_COUNT: "4"
-```
-
-From the `unit2` folder use the following command to update the instance.
-
-```
-kubectl apply -f elastic.yaml
+kubectl patch instance myes -p '{"spec":{"parameters":{"NODE_COUNT":"4"}}}' --type=merge
 ```
 
 Once the update is finished we should see an additional pod `myes-node-3`.
