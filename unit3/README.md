@@ -2,33 +2,24 @@
 
 This unit builds on `unit 2` showcasing how `update`, and `upgrade` plans get triggered. It also showcases how `controlled parameter update` can be triggered.
 
-The YAML files of the framework are the following.
 
-* [elastic-type.yaml](elastic-type.yaml) - the framework type
-* [elastic-impl-v1.yaml](elastic-impl-v1.yaml) - the v1 framework implementation
-* [elastic-impl-v2.yaml](elastic-impl-v2.yaml) - the v2 framework implementation
-* [elastic.yaml](elastic.yaml) - the framework instance
-
-
-
-### framework implementation
-
-#### parameters
+### [params.yaml](operator/params.yaml)
 
 The sample has an additional `TEST` parameter, to showcase `controlled parameter update`. The `trigger` key of the `TEST` parameter points to the `super` plan to be executed on update.
 
 ```yaml
-parameters:
-  - name: NODE_COUNT
-    default: "3"
-  - name: TEST
-    default: "0"
-    trigger: super
+NODE_COUNT:
+  default: "3"
+TEST:
+  default: "0"
+  trigger: super
 ```
 
-#### templates
+### [templates](operator/templates)
 
 No changes here.
+
+### [templates](operator/templates)
 
 #### tasks
 
@@ -98,11 +89,6 @@ plans:
 ```
 
 
-### framework instance
-
-No changes to start with.
-
-
 ### Run the framework instance
 
 If you haven't already then clone the `kudo-tutorial` repository.
@@ -111,10 +97,10 @@ If you haven't already then clone the `kudo-tutorial` repository.
 git clone https://github.com/realmbgl/kudo-tutorial.git
 ```
 
-From the `unit3` folder use the following command to run the instance.
+From the `unit3/operator` folder use the following command to run the instance.
 
 ```
-kubectl apply -f .
+kubectl kudo install . --instance myes
 ```
 
 Once the install is finished we should see the following pods.
@@ -129,7 +115,7 @@ myes-node-2   1/1     Running   0          41m
 Lets check on the plan execution history using the kudo cli, we see the `deploy plan` has been executed.
 
 ```
-kudo plan history --instance=myes
+kubectl kudo plan history --instance=myes
 History of all plan-executions for instance "myes" in namespace "default":
 .
 └── myes-deploy-206753060 (created 4h18m37s ago)
