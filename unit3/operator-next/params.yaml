@@ -1,0 +1,5 @@
+NODE_COUNT:
+  default: "3"
+TEST:
+  default: "0"
+  trigger: super
