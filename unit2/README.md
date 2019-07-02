@@ -2,9 +2,6 @@
 
 This unit uses `elasticsearch` as base technology to showcase how to develop a stateful framework.
 
-In this unit we use separate YAML files for framework type, implementation, and instance. The files are the following.
-
-
 ### [params.yaml](operator/params.yaml)
 
 The sample has one configuration parameter named `NODE_COUNT`, the number of nodes in the elasticsearch cluster, it defaults to `3`.
