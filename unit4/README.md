@@ -241,7 +241,7 @@ kubectl port-forward service/minio 9000
 Next apply the backup plan from the `unit4` folder.
 
 ```
-kubectl apply -f backup-restore/backup.yaml
+kubectl apply -f ../backup-restore/backup.yaml
 ```
 
 Check the logs of the backup job for the id of the snapshot that got created. Should look like follows, so the id for this backup is `snapshot_1557432189`.
@@ -290,29 +290,18 @@ From there we delete the whole index.
 curl -X DELETE "myes-node-0.myes-hs:9200/twitter"
 ```
 
-Back to the `unit4` folder.
+Back to the `unit4/operator` folder.
 
-Since you can't pass input at the moment when applying a PlanExecution, we do the trick by updating the `elastic.yaml` instance configuration with the snapshot id to use for restore.
-
-```yaml
-parameters:
-  NODE_COUNT: "3"
-  S3_ACCESS_KEY: "minio"
-  S3_SECRET_KEY: "minio123"
-  S3_ENDPOINT: "minio:9000"
-  RESTORE_SNAPSHOT_ID: "snapshot_1557432189"
-```
-
-Next apply the instance again.
+Since you can't pass input at the moment when applying a PlanExecution, we need to update the instance configuration with the snapshot id to use for restore.
 
 ```
-kubectl apply -f elastic.yaml
+kubectl patch instance myes -p '{"spec":{"parameters":{"RESTORE_SNAPSHOT_ID":"snapshot_1562101091"}}}' --type=merge
 ```
 
 Next apply the restore plan.
 
 ```
-kubectl apply -f backup-restore/restore.yaml
+kubectl apply -f ../backup-restore/restore.yaml
 ```
 
 Lets check that the data is back.
