@@ -2,41 +2,29 @@
 
 This unit builds on `unit 2` showcasing custom backup and restore plans using `elasticsearch` [snapshot and restore](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html). There are various repository plugins for elasticsearch snapshot restore, in this unit we are using the [repository-s3 plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/7.0/repository-s3.html). The unit requires an S3 compatible store, we use `MinIO`. The `MinIO operator` install you can find [here](https://github.com/minio/minio-operator).
 
-The YAML files of the framework are the following.
 
-* [elastic-type.yaml](elastic-type.yaml) - the framework type
-* [elastic-impl.yaml](elastic-impl.yaml) - the framework implementation
-* [elastic.yaml](elastic.yaml) - the framework instance
-
-- [backup.yaml](backup-restore/backup.yaml) - the backup `PlanExecution`
-- [restore.yaml](backup-restore/restore.yaml) - the restore `PlanExecution`
-
-
-### framework implementation
-
-#### parameters
+### [params.yaml](operator/params.yaml)
 
 The sample has four additional configuration parameters. The `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_ENDPOINT` the defaults are set for the `MinIO` instance. There is also the `RESTORE_SNAPSHOT_ID` that we will have to set before running the restore plan.
 
 ```yaml
-parameters:
-  - name: NODE_COUNT
-    default: "3"
-  - name: S3_ACCESS_KEY
-    default: "minio"
-  - name: S3_SECRET_KEY
-    default: "minio123"
-  - name: S3_ENDPOINT
-    default: "minio:9000"
-  - name: RESTORE_SNAPSHOT_ID
-    default: ""
+NODE_COUNT:
+  default: "3"
+S3_ACCESS_KEY:
+  default: "minio"
+S3_SECRET_KEY:
+  default: "minio123"
+S3_ENDPOINT:
+  default: "minio:9000"
+RESTORE_SNAPSHOT_ID:
+  default: ""
 ```
 
-#### templates
+### [templates](operator/templates)
 
 The `container` section in the `node.yaml` template now has an explicit command setting that we need to install the `repository-s3` plugin, and to add `ACCESS_KEY` and `SECRET_KEY` to the `elasticsearch-keystore`.
 
-
+[node.yaml](operator/node.yaml)
 ```yaml
 ...
 containers:
@@ -59,65 +47,66 @@ There are two additional resource templates in the framework implementation, the
 
 The `backup` template does the elasticsearch `snapshot`.
 
+[backup.yaml](operator/backup.yaml)
 ```yaml
-backup.yaml: |
-  apiVersion: batch/v1
-  kind: Job
-  metadata:
-    name: {{ .PlanName }}-job
-    namespace: default
-  spec:
-    template:
-      metadata:
-        name: {{ .PlanName }}-job
-      spec:
-        restartPolicy: OnFailure
-        containers:
-          - name: backup
-            image: centos:7
-            command:
-              - sh
-              - -c
-              - |
-                curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository" -H 'Content-Type: application/json' -d'
-                {
-                 "type": "s3",
-                 "settings": {
-                   "bucket": "es-bucket",
-                   "endpoint": "{{ .Params.S3_ENDPOINT }}",
-                   "protocol": "http"
-                 }
-                }
-                ';
-                TS=$(date +%s);
-                curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_$TS?wait_for_completion=true&pretty"
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .PlanName }}-job
+  namespace: default
+spec:
+  template:
+    metadata:
+      name: {{ .PlanName }}-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: backup
+          image: centos:7
+          command:
+            - sh
+            - -c
+            - |
+              curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository" -H 'Content-Type: application/json' -d'
+              {
+               "type": "s3",
+               "settings": {
+                 "bucket": "es-bucket",
+                 "endpoint": "{{ .Params.S3_ENDPOINT }}",
+                 "protocol": "http"
+               }
+              }
+              ';
+              TS=$(date +%s);
+              curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_$TS?wait_for_completion=true&pretty"
 ```
 
 The `restore` template does the elasticsearch `restore`.
 
+[restore.yaml](operator/restore.yaml)
 ```yaml
-restore.yaml: |
-  apiVersion: batch/v1
-  kind: Job
-  metadata:
-    name: {{ .PlanName }}-job
-    namespace: default
-  spec:
-    template:
-      metadata:
-        name: {{ .PlanName }}-job
-      spec:
-        restartPolicy: OnFailure
-        containers:
-          - name: restore
-            image: centos:7
-            command:
-              - sh
-              - -c
-              - |
-                curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/{{RESTORE_SNAPSHOT_ID}}/_restore?pretty"
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .PlanName }}-job
+  namespace: default
+spec:
+  template:
+    metadata:
+      name: {{ .PlanName }}-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: restore
+          image: centos:7
+          command:
+            - sh
+            - -c
+            - |
+              curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/{{ .Params.RESTORE_SNAPSHOT_ID }}/_restore?pretty"
 ```
 
+### [operator.yaml](operator/operator.yaml)
 
 #### tasks
 
@@ -160,20 +149,6 @@ restore:
 ```
 
 
-### framework instance
-
-The instance has to configure `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_ENDPOINT` for the `repository-s3` plugin. The `RESTORE_SNAPSHOT_ID` will have to be set and the instance applied again before a run of the `restore` plan.
-
-```yaml
-parameters:
-  NODE_COUNT: "3"
-  S3_ACCESS_KEY: "minio"
-  S3_SECRET_KEY: "minio123"
-  S3_ENDPOINT: "minio:9000"
-  RESTORE_SNAPSHOT_ID: ""
-```
-
-
 ### Run the framework instance
 
 If you haven't already then clone the `kudo-tutorial` repository.
@@ -182,10 +157,10 @@ If you haven't already then clone the `kudo-tutorial` repository.
 git clone https://github.com/realmbgl/kudo-tutorial.git
 ```
 
-From the `unit4` folder use the following command to run the instance.
+From the `unit4/operator` folder use the following command to run the instance.
 
 ```
-kubectl apply -f .
+kubectl kudo install . --instance myes
 ```
 
 
@@ -253,7 +228,7 @@ You should see the following output.
 
 ### Run the backup plan
 
-Before doing this the first time you need to go to your `MinIO` instance and create a bucket named `es-bucket` with policy `Read and Write`. You can do this via the `MinIO` console. 
+Before doing this the first time you need to go to your `MinIO` instance and create a bucket named `es-bucket` with policy `Read and Write`. You can do this via the `MinIO` console.
 
 Enable localhost access to the `MinIO` service.
 
@@ -266,7 +241,7 @@ kubectl port-forward service/minio 9000
 Next apply the backup plan from the `unit4` folder.
 
 ```
-kubectl apply -f backup-restore/backup.yaml
+kubectl apply -f ../backup-restore/backup.yaml
 ```
 
 Check the logs of the backup job for the id of the snapshot that got created. Should look like follows, so the id for this backup is `snapshot_1557432189`.
@@ -315,29 +290,18 @@ From there we delete the whole index.
 curl -X DELETE "myes-node-0.myes-hs:9200/twitter"
 ```
 
-Back to the `unit4` folder.
+Back to the `unit4/operator` folder.
 
-Since you can't pass input at the moment when applying a PlanExecution, we do the trick by updating the `elastic.yaml` instance configuration with the snapshot id to use for restore.
-
-```yaml
-parameters:
-  NODE_COUNT: "3"
-  S3_ACCESS_KEY: "minio"
-  S3_SECRET_KEY: "minio123"
-  S3_ENDPOINT: "minio:9000"
-  RESTORE_SNAPSHOT_ID: "snapshot_1557432189"
-```
-
-Next apply the instance again.
+Since you can't pass input at the moment when applying a PlanExecution, we need to update the instance configuration with the snapshot id to use for restore.
 
 ```
-kubectl apply -f elastic.yaml
+kubectl patch instance myes -p '{"spec":{"parameters":{"RESTORE_SNAPSHOT_ID":"snapshot_1562101091"}}}' --type=merge
 ```
 
 Next apply the restore plan.
 
 ```
-kubectl apply -f backup-restore/restore.yaml
+kubectl apply -f ../backup-restore/restore.yaml
 ```
 
 Lets check that the data is back.

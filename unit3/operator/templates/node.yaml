@@ -1,0 +1,55 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: node
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: elastic # has to match .spec.template.metadata.labels
+  serviceName: {{ .Name }}-hs
+  replicas: {{ .Params.NODE_COUNT }}
+  template:
+    metadata:
+      labels:
+        app: elastic # has to match .spec.selector.matchLabels
+    spec:
+      initContainers:
+        - name: init-sysctl
+          image: busybox
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+          securityContext:
+            privileged: true
+        - name: volume-permissions
+          image: busybox
+          command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: elastic
+          image: elasticsearch:7.0.0
+          ports:
+            - containerPort: 9200
+              name: api
+            - containerPort: 9300
+              name:
+          env:
+            - name: cluster.name
+              value: {{ .Name }}-cluster
+            - name: discovery.seed_hosts
+              value: {{ .Name }}-node-0.{{ .Name }}-hs,{{ .Name }}-node-1.{{ .Name }}-hs,{{ .Name }}-node-2.{{ .Name }}-hs
+            - name: cluster.initial_master_nodes
+              value: {{ .Name }}-node-0,{{ .Name }}-node-1,{{ .Name }}-node-2
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi

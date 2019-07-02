@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .PlanName }}-job
+  namespace: default
+spec:
+  template:
+    metadata:
+      name: {{ .PlanName }}-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: backup
+          image: centos:7
+          command:
+            - sh
+            - -c
+            - |
+              curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository" -H 'Content-Type: application/json' -d'
+              {
+               "type": "s3",
+               "settings": {
+                 "bucket": "es-bucket",
+                 "endpoint": "{{ .Params.S3_ENDPOINT }}",
+                 "protocol": "http"
+               }
+              }
+              ';
+              TS=$(date +%s);
+              curl -X PUT "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/snapshot_$TS?wait_for_completion=true&pretty"

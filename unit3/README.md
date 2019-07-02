@@ -2,33 +2,24 @@
 
 This unit builds on `unit 2` showcasing how `update`, and `upgrade` plans get triggered. It also showcases how `controlled parameter update` can be triggered.
 
-The YAML files of the framework are the following.
 
-* [elastic-type.yaml](elastic-type.yaml) - the framework type
-* [elastic-impl-v1.yaml](elastic-impl-v1.yaml) - the v1 framework implementation
-* [elastic-impl-v2.yaml](elastic-impl-v2.yaml) - the v2 framework implementation
-* [elastic.yaml](elastic.yaml) - the framework instance
-
-
-
-### framework implementation
-
-#### parameters
+### [params.yaml](operator/params.yaml)
 
 The sample has an additional `TEST` parameter, to showcase `controlled parameter update`. The `trigger` key of the `TEST` parameter points to the `super` plan to be executed on update.
 
 ```yaml
-parameters:
-  - name: NODE_COUNT
-    default: "3"
-  - name: TEST
-    default: "0"
-    trigger: super
+NODE_COUNT:
+  default: "3"
+TEST:
+  default: "0"
+  trigger: super
 ```
 
-#### templates
+### [templates](operator/templates)
 
 No changes here.
+
+### [operator.yaml](operator/operator.yaml)
 
 #### tasks
 
@@ -98,11 +89,6 @@ plans:
 ```
 
 
-### framework instance
-
-No changes to start with.
-
-
 ### Run the framework instance
 
 If you haven't already then clone the `kudo-tutorial` repository.
@@ -111,10 +97,10 @@ If you haven't already then clone the `kudo-tutorial` repository.
 git clone https://github.com/realmbgl/kudo-tutorial.git
 ```
 
-From the `unit3` folder use the following command to run the instance.
+From the `unit3/operator` folder use the following command to run the instance.
 
 ```
-kubectl apply -f .
+kubectl kudo install . --instance myes
 ```
 
 Once the install is finished we should see the following pods.
@@ -129,7 +115,7 @@ myes-node-2   1/1     Running   0          41m
 Lets check on the plan execution history using the kudo cli, we see the `deploy plan` has been executed.
 
 ```
-kudo plan history --instance=myes
+kubectl kudo plan history --instance=myes
 History of all plan-executions for instance "myes" in namespace "default":
 .
 └── myes-deploy-206753060 (created 4h18m37s ago)
@@ -138,17 +124,12 @@ History of all plan-executions for instance "myes" in namespace "default":
 
 ### Update the framework instance to scale to 4 nodes
 
-Update the `NODE_COUNT` parameter in `elastic.yaml` to `4`.
+Update the `NODE_COUNT` parameter to `4`.
+
+From the `unit3/operator` folder use the following command to update the instance.
 
 ```
-parameters:
-  NODE_COUNT: "4"
-```
-
-From the `unit3` folder use the following command to update the instance.
-
-```
-kubectl apply -f elastic.yaml
+kubectl patch instance myes -p '{"spec":{"parameters":{"NODE_COUNT":"4"}}}' --type=merge
 ```
 
 Once the update is finished we should see an additional pod `myes-node-3`.
@@ -176,19 +157,33 @@ History of all plan-executions for instance "myes" in namespace "default":
 
 ### Upgrade the framework instance to use a newer framework implementation
 
-In the `elastic.yaml` upgrade the frameworkVersion name to `elastic-v2`. v2 uses a newer elasticsearch docker image.
+Go to the `unit3/operator-next` folder. Its a copy of `unit3/operator` but with the operator version set to `0.2.0` in `operator.yaml` and using `elasticsearch:7.2.0` for the image in `node.yaml`.
+
+From the `unit3/operator-next` folder use the following command to update the operator version.
 
 ```
-spec:
-  frameworkVersion:
-    name: elastic-v2
-    namespace: default
+kubectl kudo install .
+
+operator.kudo.k8s.io/elastic unchanged
+operatorversion.kudo.k8s.io/elastic unchanged
+No official OperatorVersion has been found for "elastic". Do you want to install one? (Yes/no) yes
+operatorversion.kudo.k8s.io/v1alpha1/elastic-0.2.0 created
+No instance named 'elastic-4kbwh4' tied to this 'elastic' version has been found. Do you want to create one? (Yes/no) no
 ```
 
-From the `unit3` folder use the following command to update the instance.
+Check on the versions avilable.
 
 ```
-kubectl apply -f elastic.yaml
+kubectl get operatorversion
+NAME            AGE
+elastic-0.1.0   33m
+elastic-0.2.0   4s
+```
+
+Lets upgrade our running `myes` instance.
+
+```
+kubectl patch instance myes -p '{"spec": {"operatorVersion": { "name": "elastic-0.2.0"}}}' --type=merge
 ```
 
 Lets check on the plan execution history using the kudo cli, we see the `upgrade plan` has been executed.
@@ -207,18 +202,12 @@ Note: Currently not working [issue 208](https://github.com/kudobuilder/kudo/issu
 
 ### Controlled parameter update
 
-Update the `TEST` parameter in `elastic.yaml` to like `100`.
+Update the `TEST` parameter to like `100`.
+
+Use the following command to update the instance.
 
 ```
-parameters:
-  NODE_COUNT: "4"
-  TEST: "100"
-```
-
-From the `unit3` folder use the following command to update the instance.
-
-```
-kubectl apply -f elastic.yaml
+kubectl patch instance myes -p '{"spec":{"parameters":{"TEST":"100"}}}' --type=merge
 ```
 
 Lets check on the plan execution history using the kudo cli, we see the `super plan` has been executed.

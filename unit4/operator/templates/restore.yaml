@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .PlanName }}-job
+  namespace: default
+spec:
+  template:
+    metadata:
+      name: {{ .PlanName }}-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: restore
+          image: centos:7
+          command:
+            - sh
+            - -c
+            - |
+              curl -X POST "myes-node-0.myes-hs:9200/_snapshot/my_s3_repository/{{ .Params.RESTORE_SNAPSHOT_ID }}/_restore?pretty"
