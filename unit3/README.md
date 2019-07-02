@@ -19,7 +19,7 @@ TEST:
 
 No changes here.
 
-### [templates](operator/templates)
+### [operator.yaml](operator/operator.yaml)
 
 #### tasks
 
