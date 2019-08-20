@@ -129,7 +129,7 @@ Update the `NODE_COUNT` parameter to `4`.
 From the `unit3/operator` folder use the following command to update the instance.
 
 ```
-kubectl patch instance myes -p '{"spec":{"parameters":{"NODE_COUNT":"4"}}}' --type=merge
+kubectl kudo update myes -p NODE_COUNT=4
 ```
 
 Once the update is finished we should see an additional pod `myes-node-3`.
@@ -162,13 +162,10 @@ Go to the `unit3/operator-next` folder. Its a copy of `unit3/operator` but with 
 From the `unit3/operator-next` folder use the following command to update the operator version.
 
 ```
-kubectl kudo install .
+kubectl kudo upgrade . --instance myes
 
-operator.kudo.k8s.io/elastic unchanged
-operatorversion.kudo.k8s.io/elastic unchanged
-No official OperatorVersion has been found for "elastic". Do you want to install one? (Yes/no) yes
-operatorversion.kudo.k8s.io/v1alpha1/elastic-0.2.0 created
-No instance named 'elastic-4kbwh4' tied to this 'elastic' version has been found. Do you want to create one? (Yes/no) no
+operatorversion.kudo.dev/v1alpha1/elastic-0.2.0 successfully created
+instance./myes successfully updated
 ```
 
 Check on the versions avilable.
@@ -178,12 +175,6 @@ kubectl get operatorversion
 NAME            AGE
 elastic-0.1.0   33m
 elastic-0.2.0   4s
-```
-
-Lets upgrade our running `myes` instance.
-
-```
-kubectl patch instance myes -p '{"spec": {"operatorVersion": { "name": "elastic-0.2.0"}}}' --type=merge
 ```
 
 Lets check on the plan execution history using the kudo cli, we see the `upgrade plan` has been executed.
@@ -197,8 +188,12 @@ History of all plan-executions for instance "myes" in namespace "default":
 └── myes-upgrade-521226614 (created 17s ago)
 ```
 
-Note: Currently not working [issue 208](https://github.com/kudobuilder/kudo/issues/208).
+Lets see whether the myes pods use the newer `elastic container image`, you should see that version `7.2.0` is used after the upgrade.
 
+```
+kubectl get pod myes-node-0 -o yaml | grep "docker.io/library/elasticsearch:"
+    image: docker.io/library/elasticsearch:7.2.0
+```
 
 ### Controlled parameter update
 
@@ -207,7 +202,7 @@ Update the `TEST` parameter to like `100`.
 Use the following command to update the instance.
 
 ```
-kubectl patch instance myes -p '{"spec":{"parameters":{"TEST":"100"}}}' --type=merge
+kubectl kudo update myes -p TEST=100
 ```
 
 Lets check on the plan execution history using the kudo cli, we see the `super plan` has been executed.

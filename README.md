@@ -8,9 +8,9 @@ Developing `Kubernetes` operators using `KUDO`, the Kubernetes Universal Declara
 
 Run the following three commands to `install kudo`.
 ```
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.0/docs/deployment/00-prereqs.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.0/docs/deployment/10-crds.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/99e0fe7980567ba94503f6385cd54dc5e7e6e90c/docs/deployment/20-deployment.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.5.0/docs/deployment/00-prereqs.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.5.0/docs/deployment/10-crds.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/842c7f19a0a361751f0dab330faf3be147c9c4b3/docs/deployment/20-deployment.yaml
 ```
 
 More on the kudo install at [kudo.dev](https://kudo.dev/docs/getting-started/) .
@@ -28,7 +28,7 @@ More on the kudo CLI install at [kudo.dev](https://kudo.dev/docs/cli/) .
 
 ## install and operate kudo operators
 
-Install and operate your first kudo operator using [kafka](https://kudo.dev/docs/examples/apache-kafka/) as the sample.
+Install and operate your first kudo operator using [kafka](https://github.com/kudobuilder/operators/blob/master/repository/kafka/docs/v0.2/install.md) as the sample.
 
 
 ## develop kudo operators
