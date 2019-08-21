@@ -159,7 +159,7 @@ History of all plan-executions for instance "myes" in namespace "default":
 
 Go to the `unit3/operator-next` folder. Its a copy of `unit3/operator` but with the operator version set to `0.2.0` in `operator.yaml` and using `elasticsearch:7.2.0` for the image in `node.yaml`.
 
-From the `unit3/operator-next` folder use the following command to update the operator version.
+From the `unit3/operator-next` folder use the following command to upgrade the operator version.
 
 ```
 kubectl kudo upgrade . --instance myes
@@ -168,7 +168,7 @@ operatorversion.kudo.dev/v1alpha1/elastic-0.2.0 successfully created
 instance./myes successfully updated
 ```
 
-Check on the versions avilable.
+Check on the versions available.
 
 ```
 kubectl get operatorversion
@@ -188,7 +188,7 @@ History of all plan-executions for instance "myes" in namespace "default":
 └── myes-upgrade-521226614 (created 17s ago)
 ```
 
-Lets see whether the myes pods use the newer `elastic container image`, you should see that version `7.2.0` is used after the upgrade.
+Lets see whether the myes pods use the newer `elasticsearch container image`, you should see that version `7.2.0` is used after the upgrade.
 
 ```
 kubectl get pod myes-node-0 -o yaml | grep "docker.io/library/elasticsearch:"
