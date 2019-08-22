@@ -67,7 +67,7 @@ In the general section the `name` of the operator and its `version` is defined. 
 ```
 name: "myservice"
 version: "0.1.0"
-kudoVersion: 0.3.0
+kudoVersion: 0.5.0
 ```
 
 #### tasks
