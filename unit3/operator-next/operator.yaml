@@ -2,8 +2,10 @@ name: "elastic"
 version: "0.2.0"
 kudoVersion: 0.5.0
 kubernetesVersion: 1.15.0
+appVersion: 7.2.0
 maintainers:
-  - Michael Beisiegel <michael.beisiegel@gmail.com>
+  - name: Michael Beisiegel
+    email: michael.beisiegel@gmail.com
 url: https://github.com/realmbgl/kudo-tutorial
 tasks:
   deploy-task:
