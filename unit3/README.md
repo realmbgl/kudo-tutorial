@@ -129,7 +129,7 @@ Update the `NODE_COUNT` parameter to `4`.
 From the `unit3/operator` folder use the following command to update the instance.
 
 ```
-kubectl kudo update myes -p NODE_COUNT=4
+kubectl kudo update --instance myes -p NODE_COUNT=4
 ```
 
 Once the update is finished we should see an additional pod `myes-node-3`.

@@ -207,7 +207,7 @@ You should see the following output, showing the cluster status `green`.
 Lets increase the `NODE_COUNT` to `4` using the following command.
 
 ```
-kubectl kudo update myes -p NODE_COUNT=4
+kubectl kudo update --instance myes -p NODE_COUNT=4
 ```
 
 Once the update is finished we should see an additional pod `myes-node-3`.
